@@ -73,7 +73,7 @@ router.post("/signin", async (req, res) => {
 
     const options = {
       sameSite: "None",
-      secure: true,
+      secure: false,
       httpOnly: true,
       partitioned: true,
       expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
