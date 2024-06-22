@@ -1,8 +1,8 @@
 import express from "express";
 import { Router } from "express";
 import { User } from "../models/user.models.js";
-import bcrypt from 'bcrypt'
-import jwt from 'jsonwebtoken'
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 import { verify } from "../middleware/verify.js";
 
 const router = Router();
@@ -11,14 +11,15 @@ router.get("/protected", verify, (req, res) => {
   res.send(req.body);
 });
 
-
 router.post("/signup", async (req, res) => {
   try {
     console.log(req.body);
     const { name, email, password } = req.body;
 
     if (!name || !email || !password) {
-      return res.status(400).json({ error: "Please provide name, email, and password" });
+      return res
+        .status(400)
+        .json({ error: "Please provide name, email, and password" });
     }
 
     if (name === "" || email === "" || password === "") {
@@ -46,46 +47,51 @@ router.post("/signup", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
-router.post('/signin', async (req, res) => {
+router.post("/signin", async (req, res) => {
   try {
     const { email, password } = req.body;
     if (!email || !password) {
-      return res.status(400).json({ error: 'Please provide email and password' });
+      return res
+        .status(400)
+        .json({ error: "Please provide email and password" });
     }
 
     const user = await User.findOne({ email: email });
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: "User not found" });
     }
 
     // console.log(user);
     const validPassword = await bcrypt.compare(password, user.password);
     if (!validPassword) {
-      return res.status(400).json({ error: 'Invalid password' });
+      return res.status(400).json({ error: "Invalid password" });
     }
 
-    const token = jwt.sign(
-      { id: user._id },
-      process.env.JWT_SECRET,
-      { expiresIn: '31d' }
-    );
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "31d",
+    });
 
     const options = {
-      httpOnly: false,
-      sameSite: 'Lax',
-      expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+      sameSite: "None",
+      secure: true,
+      httpOnly: true,
+      expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
     };
 
     res
       .status(200)
       .cookie("token", token, options)
-      .cookie("user", {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        followers: user.followers,
-        following: user.following
-      }, options)
+      .cookie(
+        "user",
+        {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          followers: user.followers,
+          following: user.following,
+        },
+        options
+      )
       .json({
         token: token,
         user: {
@@ -93,7 +99,7 @@ router.post('/signin', async (req, res) => {
           name: user.name,
           email: user.email,
           followers: user.followers,
-          following: user.following
+          following: user.following,
         },
       });
   } catch (error) {
@@ -101,27 +107,23 @@ router.post('/signin', async (req, res) => {
   }
 });
 
-
-router.post('/logout', verify, async (req, res) => {
-  
+router.post("/logout", verify, async (req, res) => {
   const options = {
     httpOnly: false,
-    sameSite: 'Lax',
+    sameSite: "Lax",
   };
 
   try {
-    res
-    .clearCookie('token', options)
-    .clearCookie('user', options)
+    res.clearCookie("token", options).clearCookie("user", options);
 
     return res.status(200).json({
-      message: 'Logged out successfully'
+      message: "Logged out successfully",
     });
   } catch (error) {
     return res.status(500).json({
-      error: 'Failed to log out'
+      error: "Failed to log out",
     });
   }
-})
+});
 
 export { router };
