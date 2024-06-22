@@ -13,7 +13,7 @@ router.get("/protected", verify, (req, res) => {
 
 router.post("/signup", async (req, res) => {
   try {
-    console.log(req.body);
+    // console.log(req.body);
     const { name, email, password } = req.body;
 
     if (!name || !email || !password) {
@@ -61,7 +61,7 @@ router.post("/signin", async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
-    // console.log(user);
+    console.log(user);
     const validPassword = await bcrypt.compare(password, user.password);
     if (!validPassword) {
       return res.status(400).json({ error: "Invalid password" });
@@ -71,11 +71,12 @@ router.post("/signin", async (req, res) => {
       expiresIn: "31d",
     });
 
+    console.log(token);
     const options = {
       sameSite: "None",
-      secure: false,
+      secure: true,
       httpOnly: true,
-      partitioned: true,
+      // partitioned: true,
       expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
     };
 
@@ -104,6 +105,7 @@ router.post("/signin", async (req, res) => {
         },
       });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ error: error.message });
   }
 });

@@ -7,6 +7,9 @@ import { postRouter } from "./routes/post.js";
 import cookieParser from "cookie-parser";
 import { userRoute } from "./routes/user.routes.js";
 
+
+dotenv.config();
+
 const port = process.env.PORT || 3000;
 
 const app = express();
@@ -20,7 +23,6 @@ app.use(
 
 app.use(express.json());
 app.use(cookieParser());
-dotenv.config();
 
 connectDb();
 app.get("/", (req, res) => {
