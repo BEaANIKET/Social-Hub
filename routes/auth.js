@@ -14,7 +14,7 @@ router.get("/protected", verify, (req, res) => {
 
 router.post("/signup", async (req, res) => {
   try {
-    // console.log(req.body);
+    console.log(req.body);
     const { name, email, password } = req.body;
 
     if (!name || !email || !password) {
