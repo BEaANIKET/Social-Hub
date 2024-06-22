@@ -10,17 +10,15 @@ import { userRoute } from './routes/user.routes.js';
 const port = process.env.PORT || 3000
 
 const app = express();
-app.use(cors())
+
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true,
+}))
+
 app.use(express.json())
 app.use(cookieParser())
 dotenv.config()
-
-if(process.env.NODE_ENV === 'production'){
-  app.use(express.static('frontend/build'))
-  app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, 'frontend', 'build', 'index.html'))
-  })
-}
 
 connectDb();
 app.get('/', (req, res) =>{
