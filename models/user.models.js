@@ -31,30 +31,16 @@ const userSchema = mongoose.Schema({
             }
         ]
     },
-
     image:{
         type: String,
     },
-    
     bio:{
         type: String,
     },
-    
     link:{
         type: String,
-    }
+    },
 
-
-    // isAdmin: {
-    //     type: Boolean,
-    //     required: true,
-    //     default: false
-    // },
-    // isVerified: {
-    //     type: Boolean,
-    //     required: true,
-    //     default: false
-    // }
 })
 
 export const User = mongoose.model('User', userSchema);
