@@ -106,7 +106,7 @@ postRouter.put("/like", verify, async (req, res) => {
       updatedData,
     });
   } catch (error) {
-    console.log("Error liking post: ", error);
+    // console.log("Error liking post: ", error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -147,7 +147,7 @@ postRouter.put("/unlike", verify, async (req, res) => {
       updatedData,
     });
   } catch (error) {
-    console.log("Error liking post: ", error);
+    // console.log("Error liking post: ", error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -184,36 +184,36 @@ postRouter.put("/comment", verify, async (req, res) => {
       return res.status(404).json({ error: "Error updating post" });
     }
 
-    console.log("updated User ", updatedData);
+    // console.log("updated User ", updatedData);
 
     res.status(200).json({
       message: "Post commented successfully",
       updatedData,
     });
   } catch (error) {
-    console.log("Error commented post: ", error);
+    // console.log("Error commented post: ", error);
     res.status(500).json({ error: error.message });
   }
 });
 
 postRouter.delete('/deletepost/:postId', verify, async (req, res) => {
   const postId = req.params.postId;
-  console.log(postId);
+  // console.log(postId);
   try {
     const postData = await Post.findById(postId).populate('postedBy', '_id');
 
     if (!postData) {
       return res.status(404).json({ error: "Post not found" });
     }
-    console.log("postDAta ", postData);
-    console.log("req.user ", req.user);
+    // console.log("postDAta ", postData);
+    // console.log("req.user ", req.user);
 
     if (postData.postedBy._id.toString() !== req.user._id.toString()) {
       return res.status(401).json({ error: "Unauthorized access" });
     }
 
     const deletedPost = await Post.deleteOne({ _id: postId });
-    console.log("deletedPost ", deletedPost);
+    // console.log("deletedPost ", deletedPost);
     if (deletedPost) {
       return res.status(200).json({ message: "Post deleted successfully" });
     } else {
@@ -245,7 +245,7 @@ postRouter.get('/getsubpost', verify, async (req, res) => {
     .json({ posts });
 
   } catch (err) {
-    console.log(err);
+    // console.log(err);
     res.status(500).json({ error: "Server error" });
   }
 })

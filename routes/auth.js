@@ -48,7 +48,7 @@ router.post("/signup", async (req, res) => {
   }
 });
 router.post("/signin", async (req, res) => {
-  console.log("signin ");
+  // console.log("signin ");
   try {
     const { email, password } = req.body;
     if (!email || !password) {
@@ -62,7 +62,7 @@ router.post("/signin", async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
-    console.log(user);
+    // console.log(user);
     const validPassword = await bcrypt.compare(password, user.password);
     if (!validPassword) {
       return res.status(400).json({ error: "Invalid password" });
@@ -72,7 +72,7 @@ router.post("/signin", async (req, res) => {
       expiresIn: "31d",
     });
 
-    console.log(token);
+    // console.log(token);
     const options = {
       sameSite: "None",
       secure: true,
@@ -106,7 +106,7 @@ router.post("/signin", async (req, res) => {
         },
       });
   } catch (error) {
-    console.log(error);
+    // console.log(error);
     res.status(500).json({ error: error.message });
   }
 });

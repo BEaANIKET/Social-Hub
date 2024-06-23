@@ -24,7 +24,7 @@ userRoute.get("/userprofile/:userId", async (req, res) => {
       userPosts: userPosts,
     });
   } catch (error) {
-    console.error(error);
+    // console.error(error);
     res.status(500).json({ error: "Internal Server Error" })
   }
 })
@@ -72,7 +72,7 @@ userRoute.put("/follow", verify, async (req, res) => {
   }
 })
 userRoute.put("/unfollow", verify, async (req, res) => {
-    console.log("ashfkaf");
+    // console.log("ashfkaf");
   
   const currUserId = req.user._id;
   const { followId } = req.body;
@@ -144,7 +144,7 @@ userRoute.put('/updateprofile', verify, async (req, res) => {
 
   } catch (error) {
     // Handle any errors that occur during the update process
-    console.error("Error updating profile:", error);
+    // console.error("Error updating profile:", error);
     res.status(500).json({
       error: "Internal server error"
     });
