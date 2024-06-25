@@ -8,7 +8,10 @@ const postRouter = new Router();
 
 postRouter.get("/allpost", async (req, res) => {
   try {
-    const post = await Post.find().populate("postedBy", "name _id").populate("comments.postedBy", "name _id");
+    const post = await Post.find().populate("postedBy", "name _id")
+    .populate("comments.postedBy", "name _id")
+    .sort('-createdAt')
+
     res.status(200).json({
       message: "All posts",
       post,
@@ -230,6 +233,34 @@ postRouter.get('/getsubpost', verify, async (req, res) => {
   } catch (err) {
     // console.log(err);
     res.status(500).json({ error: "Server error" });
+  }
+})
+
+postRouter.post('/search', async (req, res) => {
+    
+  const name = req.body.name
+  console.log(name);
+  try {
+    const user = await User.find({ name: { $regex: name, $options: 'i' } })
+    if( !user ){
+      res.status(404)
+      .json({
+        error: "Post not found",
+      })
+    }
+
+    res
+    .status(200)
+    .json({
+      message: "All posts",
+      user,
+    })
+    
+  } catch (error) {
+    res.status(500)
+    .json({
+      error: error.message,
+    })
   }
 })
 
