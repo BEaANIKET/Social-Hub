@@ -54,6 +54,7 @@ postRouter.get("/mypost", verify, async (req, res) => {
       "postedBy",
       "_id name"
     );
+    
 
     res.status(200);
     res.json({
@@ -68,10 +69,9 @@ postRouter.get("/mypost", verify, async (req, res) => {
 });
 
 postRouter.put("/like", verify, async (req, res) => {
-  //   console.log(req.body);
-
   try {
     const { postId } = req.body;
+    const userId = req.user.id; // Assuming the verify middleware adds the user ID to req.user
 
     if (!postId) {
       return res.status(400).json({ error: "Post ID is required" });
@@ -83,38 +83,27 @@ postRouter.put("/like", verify, async (req, res) => {
       return res.status(404).json({ error: "Post not found" });
     }
 
-    //   console.log(post);
-
-    const updatedData = await Post.findByIdAndUpdate(
-      postId,
-      {
-        $push: {
-          likes: req.user._id,
-        },
-      },
-      { new: true }
-    );
-
-    if (!updatedData) {
-      return res.status(404).json({ error: "Error updating post" });
+    if (post.likes.includes(userId)) {
+      return res.status(400).json({ message: "Already liked" });
     }
 
-    //   console.log("Updated Data ->>", updatedData);
+    post.likes.push(userId);
+    await post.save();
 
     res.status(200).json({
       message: "Post liked successfully",
-      updatedData,
+      updatedData: post,
     });
   } catch (error) {
     // console.log("Error liking post: ", error);
     res.status(500).json({ error: error.message });
   }
 });
-postRouter.put("/unlike", verify, async (req, res) => {
-  // console.log(req.body);
 
+postRouter.put("/unlike", verify, async (req, res) => {
   try {
     const { postId } = req.body;
+    const userId = req.user.id; // Assuming the verify middleware adds the user ID to req.user
 
     if (!postId) {
       return res.status(400).json({ error: "Post ID is required" });
@@ -126,28 +115,22 @@ postRouter.put("/unlike", verify, async (req, res) => {
       return res.status(404).json({ error: "Post not found" });
     }
 
-    const updatedData = await Post.findByIdAndUpdate(
-      postId,
-      {
-        $pull: {
-          likes: req.user._id,
-        },
-      },
-      { new: true }
-    );
-
-    if (!updatedData) {
-      return res.status(404).json({ error: "Error updating post" });
+    if (!post.likes.includes(userId)) {
+      return res.status(400).json({
+        error: "Post not liked by this user"
+      });
     }
 
-    // console.log("updated User ", updatedData);/
+    post.likes.pull(userId);
+
+    await post.save();
 
     res.status(200).json({
-      message: "Post liked successfully",
-      updatedData,
+      message: "Post unliked successfully",
+      updatedData: post,
     });
   } catch (error) {
-    // console.log("Error liking post: ", error);
+    // console.log("Error unliking post: ", error);
     res.status(500).json({ error: error.message });
   }
 });
