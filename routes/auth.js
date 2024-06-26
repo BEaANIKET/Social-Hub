@@ -90,18 +90,12 @@ router.post("/signin", async (req, res) => {
           email: user.email,
           followers: user.followers,
           following: user.following,
+          image: user?.image
         },
         options
       )
       .json({
         token: token,
-        user: {
-          id: user._id,
-          name: user.name,
-          email: user.email,
-          followers: user.followers,
-          following: user.following,
-        },
       });
   } catch (error) {
     // console.log(error);
