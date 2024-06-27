@@ -68,34 +68,38 @@ router.post("/signin", async (req, res) => {
       return res.status(400).json({ error: "Invalid password" });
     }
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "31d",
-    });
+    const token = jwt.sign(
+      {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "31d",
+      }
+    );
 
     // console.log(token);
     const options = {
       sameSite: "None",
-      httpOnly: false,
+      httpOnly: true,
       expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
     };
 
     res
       .status(200)
       .cookie("token", token, options)
-      .cookie(
-        "user",
-        {
+      .json({
+        token: token,
+        user: {
           id: user._id,
           name: user.name,
           email: user.email,
           followers: user.followers,
           following: user.following,
-          image: user?.image
+          image: user?.image,
         },
-        options
-      )
-      .json({
-        token: token,
       });
   } catch (error) {
     // console.log(error);
@@ -120,6 +124,30 @@ router.post("/logout", verify, async (req, res) => {
       error: "Failed to log out",
     });
   }
+});
+
+router.post("/getcurrentuser", async (req, res) => {
+
+  try {
+    const token = req.cookies?.token;
+    const decryptedData = jwt.verify(token, process.env.JWT_SECRET);
+    // console.log(decryptedData);
+  
+    res
+    .status(200)
+    .json({
+      user: {
+        id: decryptedData.id,
+        name: decryptedData.name,
+        email: decryptedData.email,
+      },
+    })
+  } catch (error) {
+    res.status(500).json({
+      error: error.message,
+    })
+  }
+
 });
 
 export { router };
