@@ -110,7 +110,8 @@ router.post("/signin", async (req, res) => {
 router.post("/logout", verify, async (req, res) => {
   const options = {
     httpOnly: false,
-    sameSite: "Lax",
+    sameSite: "strict",
+    secure: process.env.NODE_ENV === "production",
   };
 
   try {
