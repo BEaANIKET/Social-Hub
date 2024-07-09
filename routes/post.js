@@ -238,7 +238,6 @@ postRouter.get('/getsubpost', verify, async (req, res) => {
 postRouter.post('/search', async (req, res) => {
     
   const name = req.body.name
-  console.log(name);
   try {
     const user = await User.find({ name: { $regex: name, $options: 'i' } })
     if( !user ){

@@ -16,8 +16,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: "https://social-hub-frontend.vercel.app",
-    // origin: "http://localhost:5173",
+    origin: ["https://social-hub-frontend.vercel.app",'http://localhost:5173'],
     credentials: true,
   })
 );
