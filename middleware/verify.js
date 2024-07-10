@@ -18,7 +18,6 @@ export const verify = async (req, res, next) => {
     }
 
     const user = await User.findById(verifyUser.id).select("-password");
-    console.log(user);
     if (!user) {
       return res.status(401).json({ error: "User not found" });
     }
