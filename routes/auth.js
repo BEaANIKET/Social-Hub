@@ -127,7 +127,7 @@ router.post("/logout", verify, async (req, res) => {
   }
 });
 
-router.post("/getcurrentuser", async (req, res) => {
+router.post("/getcurrentuser", verify, async (req, res) => {
   try {
     const token = req.cookies?.token;
     const decryptedData = jwt.verify(token, process.env.JWT_SECRET);

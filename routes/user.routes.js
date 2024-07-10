@@ -201,7 +201,6 @@ userRoute.post("/otpgenerate", async (req, res) => {
            </div>
            <p>This code will expire in 1 hour.</p>`,
   };
-  console.log("otp", otp , "email ", req.body.email);
   transporter.sendMail(recevier, (error, emailRensponse) => {
     if (error) {
       console.log(error.message);
