@@ -83,10 +83,10 @@ router.post("/signin", async (req, res) => {
     const options = {
       secure: true,
       httpOnly: true,
-      sameSite: "Strict",
       maxAge: thirtyDaysInMilliseconds, 
+      sameSite: 'Lax'
     }
-    
+
     res
       .status(200)
       .cookie("token", token, options)
@@ -131,7 +131,7 @@ router.post("/getcurrentuser", async (req, res) => {
   try {
     const token = req.cookies?.token;
     const decryptedData = jwt.verify(token, process.env.JWT_SECRET);
-    // console.log(decryptedData);
+    console.log(decryptedData);
 
     res.status(200).json({
       user: {
