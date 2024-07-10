@@ -48,7 +48,6 @@ router.post("/signup", async (req, res) => {
   }
 });
 router.post("/signin", async (req, res) => {
-  // console.log("signin ");
   try {
     const { email, password } = req.body;
     if (!email || !password) {
@@ -62,7 +61,6 @@ router.post("/signin", async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
-    // console.log(user);
     const validPassword = await bcrypt.compare(password, user.password);
     if (!validPassword) {
       return res.status(400).json({ error: "Invalid password" });
@@ -80,13 +78,15 @@ router.post("/signin", async (req, res) => {
       }
     );
 
-    // console.log(token);
-    const options = {
-      sameSite: "None",
-      httpOnly: true,
-      expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-    };
+    const thirtyDaysInMilliseconds = 30 * 24 * 60 * 60 * 1000;
 
+    const options = {
+      secure: true,
+      httpOnly: true,
+      sameSite: "Strict",
+      maxAge: thirtyDaysInMilliseconds, 
+    }
+    
     res
       .status(200)
       .cookie("token", token, options)
@@ -128,27 +128,23 @@ router.post("/logout", verify, async (req, res) => {
 });
 
 router.post("/getcurrentuser", async (req, res) => {
-
   try {
     const token = req.cookies?.token;
     const decryptedData = jwt.verify(token, process.env.JWT_SECRET);
     // console.log(decryptedData);
-  
-    res
-    .status(200)
-    .json({
+
+    res.status(200).json({
       user: {
         id: decryptedData.id,
         name: decryptedData.name,
         email: decryptedData.email,
       },
-    })
+    });
   } catch (error) {
     res.status(500).json({
       error: error.message,
-    })
+    });
   }
-
 });
 
 export { router };
