@@ -6,13 +6,16 @@ import { router } from "./routes/auth.js";
 import { postRouter } from "./routes/post.js";
 import cookieParser from "cookie-parser";
 import { userRoute } from "./routes/user.routes.js";
+import { app, server } from "./Socket/socket.js";
 
 
 dotenv.config();
 
 const port = process.env.PORT || 3000;
 
-const app = express();
+
+app.use(express.json());
+app.use(cookieParser());
 
 app.use(
   cors({
@@ -20,9 +23,6 @@ app.use(
     credentials: true,
   })
 );
-
-app.use(express.json());
-app.use(cookieParser());
 
 connectDb();
 app.get("/", (req, res) => {
@@ -32,6 +32,6 @@ app.get("/", (req, res) => {
 app.use("/api", router);
 app.use("/api", postRouter);
 app.use("/api", userRoute);
-app.listen(port, () => {
+server.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
 });

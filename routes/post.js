@@ -3,6 +3,7 @@ import { Post } from "../models/post.models.js";
 import { verify } from "../middleware/verify.js";
 import { populate } from "dotenv";
 import { User } from "../models/user.models.js";
+import { io } from "../Socket/socket.js";
 
 const postRouter = new Router();
 
@@ -39,7 +40,8 @@ postRouter.post("/createpost", verify, async (req, res) => {
     });
     await post.save();
 
-    // res.send("ok")
+    io.emit('createPost', {post})
+    
     res.status(200).json({
       message: "Post created successfully",
       post,
@@ -93,6 +95,8 @@ postRouter.put("/like", verify, async (req, res) => {
     post.likes.push(userId);
     await post.save();
 
+    io.emit('postLike', { postId: post._id, userId: userId})
+    
     res.status(200).json({
       message: "Post liked successfully",
       updatedData: post,
@@ -128,6 +132,8 @@ postRouter.put("/unlike", verify, async (req, res) => {
 
     await post.save();
 
+    io.emit('postDisliked', {postId: postId, userId: userId})
+
     res.status(200).json({
       message: "Post unliked successfully",
       updatedData: post,
@@ -138,14 +144,13 @@ postRouter.put("/unlike", verify, async (req, res) => {
   }
 });
 postRouter.put("/comment", verify, async (req, res) => {
-  // console.log(req.body);
-
   try {
     const comment = {
       text: req.body.text,
       postedBy: req.user._id,
-    }
+    };
     const { postId } = req.body;
+
     if (!postId) {
       return res.status(400).json({ error: "Post ID is required" });
     }
@@ -156,28 +161,47 @@ postRouter.put("/comment", verify, async (req, res) => {
       return res.status(404).json({ error: "Post not found" });
     }
 
-    const updatedData = await Post.findByIdAndUpdate(
+    const updatedPost = await Post.findByIdAndUpdate(
       postId,
       {
-        $push: {
-          comments: comment,
-        },
+        $push: { comments: comment },
       },
       { new: true }
-    ).populate('comments.postedBy', ' _id name')
+    ).populate('comments.postedBy', '_id name profilePic'); // Including profilePic if needed
 
-    if (!updatedData) {
+    if (!updatedPost) {
       return res.status(404).json({ error: "Error updating post" });
     }
 
-    // console.log("updated User ", updatedData);
+    const newComment = updatedPost.comments[updatedPost.comments.length - 1];
+    io.emit('postComment', {
+      postId,
+      comment: {
+        _id: newComment._id,
+        text: newComment.text,
+        createdAt: newComment.createdAt,
+        postedBy: {
+          _id: newComment.postedBy._id,
+          name: newComment.postedBy.name,
+          profilePic: newComment.postedBy.profilePic,
+        },
+      },
+    });
 
     res.status(200).json({
       message: "Post commented successfully",
-      updatedData,
+      comment: {
+        _id: newComment._id,
+        text: newComment.text,
+        createdAt: newComment.createdAt,
+        postedBy: {
+          _id: newComment.postedBy._id,
+          name: newComment.postedBy.name,
+          profilePic: newComment.postedBy.profilePic, // Assuming profilePic is available
+        },
+      },
     });
   } catch (error) {
-    // console.log("Error commented post: ", error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -201,6 +225,7 @@ postRouter.delete('/deletepost/:postId', verify, async (req, res) => {
     const deletedPost = await Post.deleteOne({ _id: postId });
     // console.log("deletedPost ", deletedPost);
     if (deletedPost) {
+      io.emit('postDeleted', {postId: postId})
       return res.status(200).json({ message: "Post deleted successfully" });
     } else {
       return res.status(422).json({ error: "Post deletion failed" });

@@ -10,7 +10,6 @@ const router = Router();
 router.get("/protected", verify, (req, res) => {
   res.send(req.body);
 });
-
 router.post("/signup", async (req, res) => {
   try {
     // console.log(req.body);
@@ -58,7 +57,7 @@ router.post("/signin", async (req, res) => {
 
     const user = await User.findOne({ email: email });
     if (!user) {
-      return res.status(404).json({ error: "User not found" });
+      return res.status(400).json({ error: "User not found" });
     }
 
     const validPassword = await bcrypt.compare(password, user.password);
@@ -81,11 +80,11 @@ router.post("/signin", async (req, res) => {
     const thirtyDaysInMilliseconds = 30 * 24 * 60 * 60 * 1000;
 
     const options = {
-      secure: true,
+      secure: false,
       httpOnly: true,
-      maxAge: thirtyDaysInMilliseconds, 
-      sameSite: 'Lax'
-    }
+      maxAge: thirtyDaysInMilliseconds,
+      sameSite: 'None', 
+    };
 
     res
       .status(200)
@@ -102,11 +101,9 @@ router.post("/signin", async (req, res) => {
         },
       });
   } catch (error) {
-    // console.log(error);
     res.status(500).json({ error: error.message });
   }
 });
-
 router.post("/logout", verify, async (req, res) => {
   const options = {
     httpOnly: false,
@@ -126,12 +123,10 @@ router.post("/logout", verify, async (req, res) => {
     });
   }
 });
-
-router.post("/getcurrentuser", verify, async (req, res) => {
+router.post("/getcurrentuser", async (req, res) => {
   try {
     const token = req.cookies?.token;
     const decryptedData = jwt.verify(token, process.env.JWT_SECRET);
-    console.log(decryptedData);
 
     res.status(200).json({
       user: {
@@ -146,5 +141,7 @@ router.post("/getcurrentuser", verify, async (req, res) => {
     });
   }
 });
+
+
 
 export { router };

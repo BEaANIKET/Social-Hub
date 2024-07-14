@@ -4,6 +4,7 @@ import { User } from "../models/user.models.js";
 import { verify } from "../middleware/verify.js";
 import nodemailer from "nodemailer";
 import bcrypt from "bcrypt";
+import { io } from "../Socket/socket.js";
 
 const userRoute = Router();
 userRoute.get("/userprofile/:userId", async (req, res) => {
