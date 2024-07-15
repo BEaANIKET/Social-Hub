@@ -80,10 +80,11 @@ router.post("/signin", async (req, res) => {
     const thirtyDaysInMilliseconds = 30 * 24 * 60 * 60 * 1000;
 
     const options = {
-      secure: false,
+      secure: true,
       httpOnly: true,
       maxAge: thirtyDaysInMilliseconds,
       sameSite: 'None', 
+      domain: 'social-hub-frontend.vercel.app',
     };
 
     res
