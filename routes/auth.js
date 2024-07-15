@@ -50,9 +50,7 @@ router.post("/signin", async (req, res) => {
   try {
     const { email, password } = req.body;
     if (!email || !password) {
-      return res
-        .status(400)
-        .json({ error: "Please provide email and password" });
+      return res.status(400).json({ error: "Please provide email and password" });
     }
 
     const user = await User.findOne({ email: email });
@@ -72,9 +70,7 @@ router.post("/signin", async (req, res) => {
         email: user.email,
       },
       process.env.JWT_SECRET,
-      {
-        expiresIn: "31d",
-      }
+      { expiresIn: "31d" }
     );
 
     const thirtyDaysInMilliseconds = 30 * 24 * 60 * 60 * 1000;
@@ -83,24 +79,21 @@ router.post("/signin", async (req, res) => {
       secure: true,
       httpOnly: true,
       maxAge: thirtyDaysInMilliseconds,
-      sameSite: 'none', 
-      domain: 'social-hub-frontend.vercel.app',
+      sameSite: 'none',
+      domain: 'social-hub-frontend.vercel.app', // Adjust this if necessary
     };
 
-    res
-      .status(200)
-      .cookie("token", token, options)
-      .json({
-        token: token,
-        user: {
-          id: user._id,
-          name: user.name,
-          email: user.email,
-          followers: user.followers,
-          following: user.following,
-          image: user?.image,
-        },
-      });
+    res.cookie("token", token, options).status(200).json({
+      token: token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        followers: user.followers,
+        following: user.following,
+        image: user?.image,
+      },
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
