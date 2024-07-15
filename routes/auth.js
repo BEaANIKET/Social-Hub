@@ -83,8 +83,8 @@ router.post("/signin", async (req, res) => {
       secure: true,
       httpOnly: true,
       maxAge: thirtyDaysInMilliseconds,
-      sameSite: 'None', 
-      // domain: 'social-hub-frontend.vercel.app',
+      sameSite: 'none', 
+      domain: 'social-hub-frontend.vercel.app',
     };
 
     res
