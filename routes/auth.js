@@ -50,7 +50,9 @@ router.post("/signin", async (req, res) => {
   try {
     const { email, password } = req.body;
     if (!email || !password) {
-      return res.status(400).json({ error: "Please provide email and password" });
+      return res
+        .status(400)
+        .json({ error: "Please provide email and password" });
     }
 
     const user = await User.findOne({ email: email });
@@ -73,17 +75,17 @@ router.post("/signin", async (req, res) => {
       { expiresIn: "31d" }
     );
 
-    const thirtyDaysInMilliseconds = 30 * 24 * 60 * 60 * 1000;
+    const thirtyDaysFromNow = new Date();
+    thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30);
 
-    const options = {
-      secure: true,
+    res.cookie("token", token, {
+      expires: thirtyDaysFromNow,
       httpOnly: true,
-      maxAge: thirtyDaysInMilliseconds,
-      sameSite: 'none',
-      domain: 'social-hub-frontend.vercel.app', // Adjust this if necessary
-    };
+      sameSite: "None",
+      secure: process.env.NODE_ENV === "production",
+    })
 
-    res.cookie("token", token, options).status(200).json({
+    res.status(200).json({
       token: token,
       user: {
         id: user._id,
@@ -135,7 +137,5 @@ router.post("/getcurrentuser", async (req, res) => {
     });
   }
 });
-
-
 
 export { router };
