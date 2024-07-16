@@ -101,13 +101,13 @@ router.post("/signin", async (req, res) => {
   }
 });
 router.post("/logout", verify, async (req, res) => {
-
   try {
     res.clearCookie("token", {
       httpOnly: true,
       sameSite: "None",
       secure: process.env.NODE_ENV === "production",
-    })
+      path: '/',
+    });
 
     return res.status(200).json({
       message: "Logged out successfully",
@@ -118,6 +118,7 @@ router.post("/logout", verify, async (req, res) => {
     });
   }
 });
+
 router.post("/getcurrentuser", async (req, res) => {
   try {
     const token = req.cookies?.token;
