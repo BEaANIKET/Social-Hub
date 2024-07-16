@@ -101,14 +101,13 @@ router.post("/signin", async (req, res) => {
   }
 });
 router.post("/logout", verify, async (req, res) => {
-  const options = {
-    httpOnly: false,
-    sameSite: "strict",
-    secure: process.env.NODE_ENV === "production",
-  };
 
   try {
-    res.clearCookie("token", options).clearCookie("user", options);
+    res.clearCookie("token", {
+      httpOnly: true,
+      sameSite: "None",
+      secure: process.env.NODE_ENV === "production",
+    })
 
     return res.status(200).json({
       message: "Logged out successfully",
