@@ -106,7 +106,6 @@ router.post("/logout", verify, async (req, res) => {
       httpOnly: true,
       sameSite: "None",
       secure: process.env.NODE_ENV === "production",
-      path: '/',
     });
 
     return res.status(200).json({
