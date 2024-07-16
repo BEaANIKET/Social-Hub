@@ -241,7 +241,7 @@ postRouter.delete('/deletepost/:postId', verify, async (req, res) => {
 postRouter.get('/getsubpost', verify, async (req, res) => {
   try {
     const posts = await Post.find({ postedBy: { $in: req.user.following } })
-      .populate("postedBy", "_id name")
+      .populate("postedBy", "_id name image")
       .populate("comments.postedBy", "_id name")
       .exec();
 

@@ -80,9 +80,9 @@ router.post("/signin", async (req, res) => {
 
     res.cookie("token", token, {
       expires: thirtyDaysFromNow,
-      httpOnly: true,
       sameSite: "None",
       secure: process.env.NODE_ENV === "production",
+      httpOnly: true,
     })
 
     res.status(200).json({
@@ -118,16 +118,13 @@ router.post("/logout", verify, async (req, res) => {
   }
 });
 
-router.post("/getcurrentuser", async (req, res) => {
+router.post("/getcurrentuser", verify,  async (req, res) => {
   try {
-    const token = req.cookies?.token;
-    const decryptedData = jwt.verify(token, process.env.JWT_SECRET);
-
     res.status(200).json({
       user: {
-        id: decryptedData.id,
-        name: decryptedData.name,
-        email: decryptedData.email,
+        id: req.user._id,
+        name: req.user.name,
+        email: req.user.email,
       },
     });
   } catch (error) {
