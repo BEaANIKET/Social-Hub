@@ -9,8 +9,8 @@ const postRouter = new Router();
 
 postRouter.get("/allpost", async (req, res) => {
   try {
-    const post = await Post.find().populate("postedBy", "name _id")
-    .populate("comments.postedBy", "name _id")
+    const post = await Post.find().populate("postedBy", "name _id image")
+    .populate("comments.postedBy", "name _id image")
     .sort('-createdAt')
 
     res.status(200).json({
@@ -21,6 +21,7 @@ postRouter.get("/allpost", async (req, res) => {
     res.status(500).json(error.message);
   }
 });
+
 postRouter.post("/createpost", verify, async (req, res) => {
   try {
     const { title, body, url } = req.body;
@@ -143,6 +144,7 @@ postRouter.put("/unlike", verify, async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
 postRouter.put("/comment", verify, async (req, res) => {
   try {
     const comment = {
@@ -235,7 +237,6 @@ postRouter.delete('/deletepost/:postId', verify, async (req, res) => {
     return res.status(500).json({ error: error.message });
   }
 });
-
 
 postRouter.get('/getsubpost', verify, async (req, res) => {
   try {
