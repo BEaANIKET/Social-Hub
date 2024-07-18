@@ -125,6 +125,7 @@ router.post("/getcurrentuser", verify,  async (req, res) => {
         id: req.user._id,
         name: req.user.name,
         email: req.user.email,
+        image: req.user.image
       },
     });
   } catch (error) {
