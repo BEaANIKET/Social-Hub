@@ -3,7 +3,6 @@ import mongoose from "mongoose";
 const postSchema = mongoose.Schema({
   title: {
     type: String,
-    required: true,
   },
   body: {
     type: String,
@@ -11,7 +10,6 @@ const postSchema = mongoose.Schema({
   },
   image: {
     type: String,
-    // required: true
   },
   postedBy: {
     type: mongoose.Schema.Types.ObjectId,

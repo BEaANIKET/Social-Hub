@@ -24,9 +24,9 @@ postRouter.get("/allpost", async (req, res) => {
 
 postRouter.post("/createpost", verify, async (req, res) => {
   try {
-    const { title, body, url } = req.body;
+    const { body, url } = req.body;
 
-    if (!title || !body || !url) {
+    if (!body) {
       res.status(422).json({
         error: "Please provide All the feild",
       });
@@ -34,7 +34,6 @@ postRouter.post("/createpost", verify, async (req, res) => {
     }
 
     const post = new Post({
-      title,
       body,
       image: url,
       postedBy: req.user,
